@@ -1,16 +1,14 @@
-exports.__esModule = true;
-
 const util = require("util");
 const restify = require("restify");
 const builder = require("botbuilder");
 const teams = require("botbuilder-teams");
 
 // Put your registered bot here, to register bot, go to bot framework
-const appName = 'app name';
-const appId = 'app id';
+const appName = process.env.APPNAME;
+const appId = process.env.APPID;
 const appPassword = 'app password';
 const userId = 'user id';
-const tenantId = 'tenant id';
+const tenantId = process.env.TENANTID;
 
 const connector = new teams.TeamsChatConnector({
   appId: appId,
