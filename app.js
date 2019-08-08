@@ -23,9 +23,9 @@ server.listen(process.env.PORT, function () {
 });
 
 // this will receive nothing, you can put your tenant id in the list to listen
-connector.setAllowedTenants([tenantId]);
-// this will reset and allow to receive from any tenants
-// connector.resetAllowedTenants();
+if(process.env.PRODUCTION) {
+  connector.setAllowedTenants([tenantId]);
+}
 
 server.post('/api/v1/bot/messages', connector.listen());
 
@@ -33,7 +33,7 @@ const bot = new builder.UniversalBot(connector, (session) => {
   // Message might contain @mentions which we would like to strip off in the response
   const text = teams.TeamsMessage.getTextWithoutMentions(session.message);
   session.send('You said: %s', text);
-}).set('storage', inMemoryBotStorage);
+ }).set('storage', inMemoryBotStorage);
 
 // bot.dialog('/', [
 //   function (session) {
