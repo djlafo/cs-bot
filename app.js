@@ -24,7 +24,8 @@ const connector = new teams.TeamsChatConnector({
 const inMemoryBotStorage = new builder.MemoryBotStorage();
 
 const server = restify.createServer();
-server.use(restify.bodyParser());
+const bodyParser = require('body-parser');
+server.use(bodyParser.json({limit: '50mb'}));
 server.listen(process.env.PORT || 57106, () => {
     console.log('%s listening to %s', server.name, util.inspect(server.address()));
 });
