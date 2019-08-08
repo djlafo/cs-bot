@@ -24,7 +24,7 @@ const connector = new teams.TeamsChatConnector({
 const inMemoryBotStorage = new builder.MemoryBotStorage();
 
 const server = restify.createServer();
-server.listen(process.env.PORT || 57106, function () {
+server.listen(process.env.PORT || 57106, () => {
     console.log('%s listening to %s', server.name, util.inspect(server.address()));
 });
 
@@ -35,39 +35,72 @@ if(process.env.PRODUCTION) {
 
 server.post('/api/v1/bot/messages', connector.listen());
 
+/* VARIABLES */
+/* END VARIABLES */
+
 const bot = new builder.UniversalBot(connector, (session) => {
   // Message might contain @mentions which we would like to strip off in the response
   const text = teams.TeamsMessage.getTextWithoutMentions(session.message);
-  switch(text) {
+  const split = session.message.text.split(' ');
+  switch(split[0]) {
     case 'help':
       session.beginDialog('help');
+    break;
+    case 'randompoints':
+      session.beginDialog('randompoints');
+    break;
+    case 'jira':
+      if(split.length > 1) {
+        session.send(getJiraLink(split[1]))
+      } else {
+        session.beginDialog('jira');
+      }
     break;
   }
  }).set('storage', inMemoryBotStorage);
 
+ teams.TeamsMessage.getGeneralChannel('Bot Online')
+
 bot.dialog('help', [
-  function (session) {
-      builder.Prompts.choice(session, "Choose an option:", 'Option 1|Option 2');
+  (session) => {
+      builder.Prompts.choice(session, "Choose an option:", 'Random Points|Jira');
   },
-  function (session, results) {
+  (session, results) => {
     switch (results.response.index) {
       case 0:
-          session.endDialog('You chose option 1');
+        session.beginDialog('points');
       break;
       case 1:
-          session.send("Starting timer");
-          setTimeout(() => {
-            session.endDialog('You chose option 2');
-          }, 10000);
+        session.beginDialog('jira');
       break;
     }
   }
 ]);
 
+bot.dialog('randompoints',
+  (session) => {
+    const points = [0,1,2,3,5,8,13,21];
+    session.endDialog(`${points[Math.floor(Math.random() * points.length)]} points`);
+  }
+);
+
+bot.dialog('jira',
+  (session) => {
+    if(session.message.text === "2") {
+      session.send("Number?");
+    } else {
+      session.send(getJiraLink(session.message.text));
+    }
+  }
+);
+
+function getJiraLink(num) {
+  return `https://jira.mediware.com/browse/MSP-${num}`;
+}
+
 // bot.on('conversationUpdate', function (message) {
 //   console.log(message);
 //   const event = teams.TeamsMessage.getConversationUpdateData(message);
-//   session.endDialog('hello');
 // });
 
 
