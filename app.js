@@ -24,6 +24,7 @@ const connector = new teams.TeamsChatConnector({
 const inMemoryBotStorage = new builder.MemoryBotStorage();
 
 const server = restify.createServer();
+server.use(restify.bodyParser());
 server.listen(process.env.PORT || 57106, () => {
     console.log('%s listening to %s', server.name, util.inspect(server.address()));
 });
@@ -36,13 +37,17 @@ if(process.env.PRODUCTION) {
 server.post('/api/v1/bot/messages', connector.listen());
 
 server.post('/api/v1/bot/merge_requests', (req, res, next) => {
-  console.log(req.body);
+  console.log(req.body.object_attributes.url);
+  var msg = new builder.Message().address(address);
+  msg.text('Hello, this is a notification');
+  bot.send(msg);
   res.send();
   return next();
 });
 
 const bot = new builder.UniversalBot(connector, (session) => {
   // function activated on any chat directed towards bot
+  console.log(session.address);
   const split = session.message.text.split(' ');
   const hasArgs = split.length > 1;
   switch(split[0]) {
@@ -61,7 +66,9 @@ const bot = new builder.UniversalBot(connector, (session) => {
       }
     break;
     default:
-      session.beginDialog(split[0]);
+      try {
+        session.beginDialog(split[0]);
+      } catch(e) {}
     break;
   }
  }).set('storage', inMemoryBotStorage);
