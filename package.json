@@ -7,8 +7,7 @@
   "dependencies": {
     "restify": "*",
     "botbuilder": "^3.11.0",
-    "botbuilder-teams": "^0.2.6",
-    "body-parser": "*"
+    "botbuilder-teams": "^0.2.6"
   },
   "engines": {
     "node": "12.x"

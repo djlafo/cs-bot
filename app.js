@@ -24,8 +24,7 @@ const connector = new teams.TeamsChatConnector({
 const inMemoryBotStorage = new builder.MemoryBotStorage();
 
 const server = restify.createServer();
-const bodyParser = require('body-parser');
-server.use(bodyParser.json({limit: '50mb'}));
+server.use(restify.plugins.bodyParser());
 server.listen(process.env.PORT || 57106, () => {
     console.log('%s listening to %s', server.name, util.inspect(server.address()));
 });
@@ -48,7 +47,7 @@ server.post('/api/v1/bot/merge_requests', (req, res, next) => {
 
 const bot = new builder.UniversalBot(connector, (session) => {
   // function activated on any chat directed towards bot
-  console.log(session.address);
+  console.log(session.message.address);
   const split = session.message.text.split(' ');
   const hasArgs = split.length > 1;
   switch(split[0]) {
