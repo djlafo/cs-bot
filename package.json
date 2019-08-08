@@ -5,8 +5,8 @@
   "main": "bot.js",
   "author": "Dylan Lafont,Zachary Noe, Chet Ransonet,Andres Martinez Gutierrez",
   "dependencies": {
-    "restify": "8.4.0",
-    "botbuilder-teams": "0.2.7",
-    "botbuilder": "4.5.3"
+    "restify": "^5.0.0",
+    "botbuilder-teams": "^0.1.7",
+    "botbuilder": "^3.13.1"
   }
 }
