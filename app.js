@@ -59,8 +59,6 @@ const bot = new builder.UniversalBot(connector, (session) => {
   }
  }).set('storage', inMemoryBotStorage);
 
- teams.TeamsMessage.getGeneralChannel('Bot Online')
-
 bot.dialog('help', [
   (session) => {
       builder.Prompts.choice(session, "Choose an option:", 'Random Points|Jira');
