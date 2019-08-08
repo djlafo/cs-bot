@@ -6,8 +6,8 @@
   "author": "Dylan Lafont,Zachary Noe, Chet Ransonet,Andres Martinez Gutierrez",
   "dependencies": {
     "restify": "*",
-    "botbuilder-teams": "*",
-    "botbuilder": "*"
+    "botbuilder": "^3.11.0",
+    "botbuilder-teams": "^0.2.6"
   },
   "engines": {
     "node": "12.x"
