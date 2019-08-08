@@ -23,9 +23,9 @@ server.listen(process.env.PORT, function () {
 });
 
 // this will receive nothing, you can put your tenant id in the list to listen
-// connector.setAllowedTenants([]);
+connector.setAllowedTenants([tenantId]);
 // this will reset and allow to receive from any tenants
-connector.resetAllowedTenants();
+// connector.resetAllowedTenants();
 
 server.post('/api/v1/bot/messages', connector.listen());
 
