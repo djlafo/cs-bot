@@ -42,34 +42,37 @@ const bot = new builder.UniversalBot(connector, (session) => {
   // Message might contain @mentions which we would like to strip off in the response
   const text = teams.TeamsMessage.getTextWithoutMentions(session.message);
   const split = session.message.text.split(' ');
+  const hasArgs = split.length > 1;
   switch(split[0]) {
-    case 'help':
-      session.beginDialog('help');
-    break;
-    case 'randompoints':
-      session.beginDialog('randompoints');
-    break;
     case 'jira':
-      if(split.length > 1) {
+      if(hasArgs) {
         session.send(getJiraLink(split[1]))
       } else {
         session.beginDialog('jira');
       }
     break;
+    case 'timer': 
+      if(hasArgs) {
+        startTimer(session, split[1]);
+      } else {
+        session.beginDialog('timer');
+      }
+    break;
+    default:
+      session.beginDialog(split[0]);
+    break;
   }
  }).set('storage', inMemoryBotStorage);
 
+const options = ['randompoints', 'jira', 'timer'];
 bot.dialog('help', [
   (session) => {
-      builder.Prompts.choice(session, "Choose an option:", 'Random Points|Jira');
+      builder.Prompts.choice(session, "Choose an option:", options.join('|'));
   },
   (session, results) => {
     switch (results.response.index) {
-      case 0:
-        session.beginDialog('points');
-      break;
-      case 1:
-        session.beginDialog('jira');
+      default: 
+        session.beginDialog(options[results.response.index]);
       break;
     }
   }
@@ -92,8 +95,36 @@ bot.dialog('jira',
   }
 );
 
+bot.dialog('timer', 
+  (session) => {
+    if(session.message.text === "3") {
+      session.send("Time (hh:mm:ss, double digits and 0 digits unnecessary)?");
+    } else {
+      startTimer(session, session.message.text);
+    }
+  }
+);
+
 function getJiraLink(num) {
   return `https://jira.mediware.com/browse/MSP-${num}`;
+}
+
+function startTimer(session, time) {
+  const segments = time.split(':').reverse();
+  let waitTime = 0;
+  if(segments.length >= 1) {
+    waitTime += Number(segments[0]) * 1000;
+  }
+  if(segments.length >= 2) {
+    waitTime += Number(segments[1]) * 60 * 1000;
+  }
+  if(segments.length >= 3) {
+    waitTime += Number(segments[2]) * 60 * 60 * 1000;
+  }
+  session.send('Timer started');
+  setTimeout(() => {
+    session.endDialog(`Timer ended (${time})`);
+  }, waitTime);
 }
 
 // bot.on('conversationUpdate', function (message) {
