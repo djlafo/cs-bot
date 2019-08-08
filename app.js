@@ -3,13 +3,13 @@ const restify = require("restify");
 const builder = require("botbuilder");
 const teams = require("botbuilder-teams");
 
-// Put your registered bot here, to register bot, go to bot framework
 
-let appName = process.env.APPNAME;
+// bot config
 let appId = process.env.APPID;
 let appPassword = process.env.APPPASS;
-let userId = 'user id';
 let tenantId = process.env.TENANTID;
+
+// pull from config json if not in prod
 if(!process.env.PRODUCTION) {
   const localConfig = require('./config.json');
   appId = localConfig.appId;
@@ -28,19 +28,15 @@ server.listen(process.env.PORT || 57106, () => {
     console.log('%s listening to %s', server.name, util.inspect(server.address()));
 });
 
-// this will receive nothing, you can put your tenant id in the list to listen
+// set allowed tenant 
 if(process.env.PRODUCTION) {
   connector.setAllowedTenants([tenantId]);
 }
 
 server.post('/api/v1/bot/messages', connector.listen());
 
-/* VARIABLES */
-/* END VARIABLES */
-
 const bot = new builder.UniversalBot(connector, (session) => {
-  // Message might contain @mentions which we would like to strip off in the response
-  const text = teams.TeamsMessage.getTextWithoutMentions(session.message);
+  // function activated on any chat directed towards bot
   const split = session.message.text.split(' ');
   const hasArgs = split.length > 1;
   switch(split[0]) {
@@ -64,6 +60,7 @@ const bot = new builder.UniversalBot(connector, (session) => {
   }
  }).set('storage', inMemoryBotStorage);
 
+ // help menu with all commands
 const options = ['randompoints', 'jira', 'timer'];
 bot.dialog('help', [
   (session) => {
@@ -121,15 +118,10 @@ function startTimer(session, time) {
   if(segments.length >= 3) {
     waitTime += Number(segments[2]) * 60 * 60 * 1000;
   }
-  session.send('Timer started');
+  session.send(`Timer ended (${time})`);
   setTimeout(() => {
     session.endDialog(`Timer ended (${time})`);
   }, waitTime);
 }
-
-// bot.on('conversationUpdate', function (message) {
-//   console.log(message);
-//   const event = teams.TeamsMessage.getConversationUpdateData(message);
-// });
 
 
