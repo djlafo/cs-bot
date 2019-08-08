@@ -36,7 +36,7 @@ if(process.env.PRODUCTION) {
 server.post('/api/v1/bot/messages', connector.listen());
 
 server.post('/api/v1/bot/merge_requests', (req, res, next) => {
-  console.log(req.body);
+  console.log(req);
   next();
 });
 
