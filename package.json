@@ -8,5 +8,8 @@
     "restify": "*",
     "botbuilder-teams": "*",
     "botbuilder": "*"
+  },
+  "engines": {
+    "node": "12.x"
   }
 }
