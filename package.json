@@ -1,0 +1,12 @@
+{
+  "name": "cs-bot",
+  "version": "1.0.0",
+  "description": "CS Microsoft Teams Bot",
+  "main": "bot.js",
+  "author": "Dylan Lafont,Zachary Noe, Chet Ransonet,Andres Martinez Gutierrez",
+  "dependencies": {
+    "restify": "8.4.0",
+    "botbuilder-teams": "0.2.7",
+    "botbuilder": "4.5.3"
+  }
+}
