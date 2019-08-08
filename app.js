@@ -16,7 +16,7 @@ const connector = new teams.TeamsChatConnector({
 });
 
 const server = restify.createServer();
-server.listen(3978, function () {
+server.listen(process.env.PORT, function () {
     console.log('%s listening to %s', server.name, util.inspect(server.address()));
 });
 
