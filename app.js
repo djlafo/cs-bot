@@ -42,6 +42,7 @@ bot.dialog('/', [
 bot.on('conversationUpdate', function (message) {
   console.log(message);
   const event = teams.TeamsMessage.getConversationUpdateData(message);
+  session.endDialog('hello');
 });
 
 
