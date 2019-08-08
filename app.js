@@ -4,11 +4,17 @@ const builder = require("botbuilder");
 const teams = require("botbuilder-teams");
 
 // Put your registered bot here, to register bot, go to bot framework
-const appName = process.env.APPNAME;
-const appId = process.env.APPID;
-const appPassword = process.env.APPPASS;
-const userId = 'user id';
-const tenantId = process.env.TENANTID;
+
+let appName = process.env.APPNAME;
+let appId = process.env.APPID;
+let appPassword = process.env.APPPASS;
+let userId = 'user id';
+let tenantId = process.env.TENANTID;
+if(!process.env.PRODUCTION) {
+  const localConfig = require('./config.json');
+  appId = localConfig.appId;
+  appPassword = localConfig.appPassword;
+}
 
 const connector = new teams.TeamsChatConnector({
   appId: appId,
@@ -18,7 +24,7 @@ const connector = new teams.TeamsChatConnector({
 const inMemoryBotStorage = new builder.MemoryBotStorage();
 
 const server = restify.createServer();
-server.listen(process.env.PORT, function () {
+server.listen(process.env.PORT || 57106, function () {
     console.log('%s listening to %s', server.name, util.inspect(server.address()));
 });
 
@@ -32,18 +38,28 @@ server.post('/api/v1/bot/messages', connector.listen());
 const bot = new builder.UniversalBot(connector, (session) => {
   // Message might contain @mentions which we would like to strip off in the response
   const text = teams.TeamsMessage.getTextWithoutMentions(session.message);
-  session.send('You said: %s', text);
+  switch(text) {
+    case 'help':
+      session.beginDialog('help');
+    break;
+  }
  }).set('storage', inMemoryBotStorage);
 
-// bot.dialog('/', [
-//   function (session) {
-//       builder.Prompts.choice(session, "Choose an option:", 'Fetch channel list|Mention user|Start new 1 on 1 chat|Route message to general channel|FetchMemberList|Send O365 actionable connector card|FetchTeamInfo(at Bot in team)|Start New Reply Chain (in channel)|Issue a Signin card to sign in a Facebook app|Logout Facebook app and clear cached credentials|MentionChannel|MentionTeam|NotificationFeed|Bot Delete Message');
-//   },
-//   function (session, results) {
-//     switch (results.response.index) {
-//     }
-//   }
-// ]);
+bot.dialog('help', [
+  function (session) {
+      builder.Prompts.choice(session, "Choose an option:", 'Option 1|Option 2');
+  },
+  function (session, results) {
+    switch (results.response.index) {
+      case 1:
+          session.endDialog('You chose option 1');
+      break;
+      case 2:
+          session.endDialog('You chose option 1');
+      break;
+    }
+  }
+]);
 
 // bot.on('conversationUpdate', function (message) {
 //   console.log(message);
