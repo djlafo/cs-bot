@@ -6,7 +6,7 @@ const teams = require("botbuilder-teams");
 // Put your registered bot here, to register bot, go to bot framework
 const appName = process.env.APPNAME;
 const appId = process.env.APPID;
-const appPassword = 'app password';
+const appPassword = process.env.APPPASS;
 const userId = 'user id';
 const tenantId = process.env.TENANTID;
 
