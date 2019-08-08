@@ -51,11 +51,14 @@ bot.dialog('help', [
   },
   function (session, results) {
     switch (results.response.index) {
-      case 1:
+      case 0:
           session.endDialog('You chose option 1');
       break;
-      case 2:
-          session.endDialog('You chose option 1');
+      case 1:
+          session.send("Starting timer");
+          setTimeout(() => {
+            session.endDialog('You chose option 2');
+          }, 10000);
       break;
     }
   }
