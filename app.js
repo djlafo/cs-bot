@@ -15,7 +15,7 @@ const connector = new teams.TeamsChatConnector({
   appPassword: appPassword
 });
 
-// const inMemoryBotStorage = new builder.MemoryBotStorage();
+const inMemoryBotStorage = new builder.MemoryBotStorage();
 
 const server = restify.createServer();
 server.listen(process.env.PORT, function () {
