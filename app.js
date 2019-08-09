@@ -65,6 +65,9 @@ const bot = new builder.UniversalBot(connector, (session) => {
         session.beginDialog('timer');
       }
     break;
+    case 'joke':
+      session.beginDialog('joke');
+    break;
     default:
       try {
         session.beginDialog(split[0]);
@@ -115,6 +118,22 @@ bot.dialog('timer',
   }
 );
 
+bot.dialog('joke', [
+  function(session) {
+    var request = require('request');
+
+    let options = {
+        url: 'https://geek-jokes.sameerkumar.website/api',
+        method: 'GET'
+    }
+
+    request(options, (err, response, body) => {
+      if(!err && response.statusCode == 200)
+        session.endDialog(body);
+    });
+  }
+]);
+
 function getJiraLink(num) {
   return `https://jira.mediware.com/browse/MSP-${num}`;
 }
@@ -136,5 +155,3 @@ function startTimer(session, time) {
     session.endDialog(`Timer ended (${time})`);
   }, waitTime);
 }
-
-
