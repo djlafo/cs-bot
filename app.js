@@ -34,20 +34,29 @@ if(process.env.PRODUCTION) {
   connector.setAllowedTenants([tenantId]);
 }
 
+/* VARIABLES */
+let serviceUrl = '';
+
 server.post('/api/v1/bot/messages', connector.listen());
 
 server.post('/api/v1/bot/merge_requests', (req, res, next) => {
-  console.log(req.body.object_attributes.url);
-  var msg = new builder.Message().address(address);
-  msg.text('Hello, this is a notification');
-  bot.send(msg);
+  if(serviceUrl) {
+    connector.startReplyChain(service, "1565306370830", req.body.object_attributes.url, (err, address) => {
+      if (err) {
+          console.log(err);
+          session.endDialog('There is some error');
+      } else {
+          console.log(address);
+      }
+    });
+  }
   res.send();
   return next();
 });
 
 const bot = new builder.UniversalBot(connector, (session) => {
   // function activated on any chat directed towards bot
-  console.log(session.message.address);
+  serviceUrl = session.message.address.serviceUrl;
   const split = session.message.text.split(' ');
   const hasArgs = split.length > 1;
   switch(split[0]) {
@@ -65,13 +74,14 @@ const bot = new builder.UniversalBot(connector, (session) => {
         session.beginDialog('timer');
       }
     break;
+    case 'randompoints':
+      session.beginDialog('randompoints');
+    break;
+    case 'help':
+      session.beginDialog('help');
+    break;
     case 'joke':
       session.beginDialog('joke');
-    break;
-    default:
-      try {
-        session.beginDialog(split[0]);
-      } catch(e) {}
     break;
   }
  }).set('storage', inMemoryBotStorage);
