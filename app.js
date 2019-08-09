@@ -56,8 +56,9 @@ server.post('/api/v1/bot/merge_requests', (req, res, next) => {
 
 const bot = new builder.UniversalBot(connector, (session) => {
   // function activated on any chat directed towards bot
+  const text = teams.TeamsMessage.getTextWithoutMentions(session.message);
   serviceUrl = session.message.address.serviceUrl;
-  const split = session.message.text.split(' ');
+  const split = text.split(' ');
   const hasArgs = split.length > 1;
   switch(split[0]) {
     case 'jira':
@@ -87,7 +88,7 @@ const bot = new builder.UniversalBot(connector, (session) => {
  }).set('storage', inMemoryBotStorage);
 
  // help menu with all commands
-const options = ['randompoints', 'jira', 'timer'];
+const options = ['randompoints', 'jira', 'timer', 'joke'];
 bot.dialog('help', [
   (session) => {
       builder.Prompts.choice(session, "Choose an option:", options.join('|'));
