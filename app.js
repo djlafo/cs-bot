@@ -41,7 +41,7 @@ server.post('/api/v1/bot/messages', connector.listen());
 
 server.post('/api/v1/bot/merge_requests', (req, res, next) => {
   if(serviceUrl) {
-    connector.startReplyChain(service, "1565306370830", req.body.object_attributes.url, (err, address) => {
+    connector.startReplyChain(serviceUrl, "1565306370830", req.body.object_attributes.url, (err, address) => {
       if (err) {
           console.log(err);
           session.endDialog('There is some error');
