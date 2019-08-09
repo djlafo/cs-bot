@@ -161,7 +161,7 @@ function startTimer(session, time) {
   if(segments.length >= 3) {
     waitTime += Number(segments[2]) * 60 * 60 * 1000;
   }
-  session.send(`Timer ended (${time})`);
+  session.send(`Timer started (${time})`);
   setTimeout(() => {
     session.endDialog(`Timer ended (${time})`);
   }, waitTime);
