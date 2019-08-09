@@ -39,6 +39,7 @@ let serviceUrl = '';
 
 server.post('/api/v1/bot/messages', connector.listen());
 
+// THIS IS THE FAILURE OF MS
 server.post('/api/v1/bot/merge_requests', (req, res, next) => {
   if(serviceUrl) {
     connector.startReplyChain(serviceUrl, "1565306370830", req.body.object_attributes.url, (err, address) => {
@@ -67,30 +68,33 @@ const bot = new builder.UniversalBot(connector, (session) => {
       } else {
         session.beginDialog('jira');
       }
-    break;
+      break;
     case 'timer': 
       if(hasArgs) {
         startTimer(session, split[1]);
       } else {
         session.beginDialog('timer');
       }
-    break;
+      break;
     case 'randompoints':
       session.beginDialog('randompoints');
-    break;
+      break;
     case 'help':
       session.beginDialog('help');
-    break;
+      break;
     case 'joke':
       session.beginDialog('joke');
-    break;
+      break;
+    case 'pomodoro':
+      session.beginDialog('pomodoro');
+      break;
   }
  }).set('storage', inMemoryBotStorage);
 
  // help menu with all commands
-const options = ['randompoints', 'jira', 'timer', 'joke'];
+const options = ['randompoints', 'jira', 'timer', 'joke', 'pomodoro'];
 bot.dialog('help', [
-  (session) => {
+  session => {
       builder.Prompts.choice(session, "Choose an option:", options.join('|'));
   },
   (session, results) => {
@@ -102,15 +106,13 @@ bot.dialog('help', [
   }
 ]);
 
-bot.dialog('randompoints',
-  (session) => {
+bot.dialog('randompoints', session => {
     const points = [0,1,2,3,5,8,13,21];
     session.endDialog(`${points[Math.floor(Math.random() * points.length)]} points`);
   }
 );
 
-bot.dialog('jira',
-  (session) => {
+bot.dialog('jira', session => {
     if(session.message.text === "2") {
       session.send("Number?");
     } else {
@@ -119,8 +121,7 @@ bot.dialog('jira',
   }
 );
 
-bot.dialog('timer', 
-  (session) => {
+bot.dialog('timer', session => {
     if(session.message.text === "3") {
       session.send("Time (hh:mm:ss, double digits and 0 digits unnecessary)?");
     } else {
@@ -128,6 +129,26 @@ bot.dialog('timer',
     }
   }
 );
+
+const pomofn = (time1, time2, session, stop=false, count=0) => {
+  if (count === 7) {
+    session.endDialog("Take a long break.");
+  } else {
+    if (stop) {
+      session.send("Take a 5m break!");
+    } else {
+      session.send("Get to work! 25m and counting...");
+    }
+
+    setTimeout(() => {
+      pomofn(time1, time2, session, !stop, count + 1);
+    }, stop ? time2 : time1);
+  }
+};
+
+bot.dialog('pomodoro', session => {
+  pomofn(25 * 60 * 1000, 5 * 60 * 1000, session);
+});
 
 bot.dialog('joke', [
   function(session) {
